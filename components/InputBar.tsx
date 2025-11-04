@@ -17,7 +17,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, isLoading }) => {
   };
 
   return (
-    <div className="sticky bottom-0 z-10 p-4 bg-cyber-purple/60 backdrop-blur-xl border-t border-white/10">
+    <div className="sticky bottom-0 z-20 p-4 bg-slate-950/30 backdrop-blur-lg border-t border-white/5">
       <div className="container mx-auto">
         <form onSubmit={handleSubmit} className="flex items-center space-x-3">
           <div className="relative w-full">
@@ -27,14 +27,14 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, isLoading }) => {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask Zyrox anything..."
               disabled={isLoading}
-              className="w-full pl-4 pr-12 py-3 bg-slate-900/80 text-slate-100 border border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-electric-cyan transition-all duration-300 disabled:opacity-50"
+              className="w-full pl-4 pr-12 py-3 bg-white/10 text-slate-100 border border-white/10 rounded-full focus:outline-none focus:ring-2 focus:ring-electric-cyan transition-all duration-300 disabled:opacity-50 placeholder:text-slate-500"
               autoComplete="off"
             />
           </div>
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-electric-cyan to-hot-magenta text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-cyber-purple focus:ring-hot-magenta animate-breathing-glow"
+            className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-electric-cyan to-hot-magenta text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 focus:ring-hot-magenta animate-breathing-glow"
             aria-label="Send message"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 transform rotate-0">

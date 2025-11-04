@@ -1,12 +1,10 @@
 import { GoogleGenAI, Chat } from "@google/genai";
 
-const API_KEY = 'AIzaSyByaJA1ytlDjVofeMzBAmqU0eDoQprTKcY';
-
-if (!API_KEY) {
+if (!process.env.API_KEY) {
   throw new Error("Gemini API key not found. Please set the API_KEY environment variable.");
 }
 
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export function createChatSession(): Chat {
   const chatSession = ai.chats.create({

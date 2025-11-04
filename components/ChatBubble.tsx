@@ -8,7 +8,7 @@ interface ChatBubbleProps {
 }
 
 const ZCoreAvatar: React.FC = () => (
-    <div className="w-10 h-10 flex-shrink-0 rounded-full flex items-center justify-center shadow-lg bg-cyber-purple/80 ring-1 ring-electric-cyan/30">
+    <div className="w-10 h-10 flex-shrink-0 rounded-full flex items-center justify-center shadow-lg bg-slate-900/70 border border-electric-cyan/30">
       <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <defs>
               <linearGradient id="grad-avatar-bubble" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -62,8 +62,8 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isFirst, isStreaming }
   if (isUser) {
     return (
       <div className="self-end animate-slide-in-right group relative">
-        <div className="max-w-md lg:max-w-2xl px-4 py-3 rounded-2xl shadow-lg bg-gradient-to-br from-purple-600 to-hot-magenta text-white rounded-br-none">
-          <p className="whitespace-pre-wrap break-words text-base">{message.content}</p>
+        <div className="max-w-md lg:max-w-2xl px-4 py-3 rounded-2xl shadow-lg bg-gradient-to-br from-violet-600 to-hot-magenta text-white rounded-br-none">
+          <p className="whitespace-pre-wrap break-words text-base leading-relaxed">{message.content}</p>
         </div>
         <CopyButton text={message.content} />
       </div>
@@ -78,11 +78,11 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isFirst, isStreaming }
       </div>
       <div className="relative group">
         <div
-          className={`px-4 py-3 rounded-2xl shadow-lg bg-slate-800/50 backdrop-blur-lg text-slate-200 rounded-bl-none ring-1 ring-electric-cyan/30`}
+          className={`px-4 py-3 rounded-2xl shadow-lg bg-white/10 backdrop-blur-xl text-slate-100 rounded-bl-none border border-white/10`}
         >
-          <p className="whitespace-pre-wrap break-words text-base">
+          <p className="whitespace-pre-wrap break-words text-base leading-relaxed">
             {message.content || ' '}
-            {isStreaming && <span className="inline-block w-0.5 h-5 bg-electric-cyan animate-blink ml-1"></span>}
+            {isStreaming && <span className="inline-block w-0.5 h-5 bg-electric-cyan animate-blink ml-1 align-bottom"></span>}
           </p>
         </div>
         {message.content && <CopyButton text={message.content} />}

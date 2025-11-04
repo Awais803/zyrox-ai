@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Chat } from '@google/genai';
-import { createChatSession } from './services/geminiService';
+import { createChatSession } from './geminiService';
 import Header from './components/Header';
 import ChatBubble from './components/ChatBubble';
 import TypingIndicator from './components/TypingIndicator';
@@ -96,15 +96,15 @@ const App: React.FC = () => {
   const showTypingIndicator = isLoading && !isAIResponding;
 
   return (
-    <div className="flex flex-col h-screen font-sans text-white">
+    <div className="flex flex-col h-screen bg-transparent">
       <Header />
-      <main ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 md:p-6">
+      <main ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 md:p-6" style={{ scrollbarGutter: 'stable both-edges' }}>
         <div className="container mx-auto flex flex-col space-y-4 pb-4">
           {messages.map((msg, index) => (
             <ChatBubble 
               key={index} 
               message={msg} 
-              isFirst={msg.author === MessageAuthor.MODEL && !messages.slice(0, index).some(m => m.author === MessageAuthor.MODEL)} 
+              isFirst={msg.author === MessageAuthor.MODEL && (index === 0 || messages[index - 1].author !== MessageAuthor.MODEL)} 
               isStreaming={isAIResponding && index === messages.length - 1}
             />
           ))}
