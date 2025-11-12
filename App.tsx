@@ -67,7 +67,9 @@ const App: React.FC = () => {
         modelResponse += chunk.text;
         setMessages(prev => {
           const newMessages = [...prev];
-          newMessages[newMessages.length - 1].content = modelResponse;
+          const lastMessage = newMessages[newMessages.length - 1];
+          // Create a new object for the last message to avoid mutation
+          newMessages[newMessages.length - 1] = { ...lastMessage, content: modelResponse };
           return newMessages;
         });
       }
@@ -78,7 +80,8 @@ const App: React.FC = () => {
           const lastMessage = newMessages[newMessages.length - 1];
           // If the last message is an empty model message, fill it with an error.
           if(lastMessage.author === MessageAuthor.MODEL && lastMessage.content === '') {
-            lastMessage.content = "Oops! Something went wrong. I couldn't process that. Please try again.";
+            // Create a new object for the last message to avoid mutation
+            newMessages[newMessages.length - 1] = { ...lastMessage, content: "Oops! Something went wrong. I couldn't process that. Please try again." };
           } else { // Otherwise, append a new error message.
              newMessages.push({
                 author: MessageAuthor.MODEL,
@@ -92,7 +95,7 @@ const App: React.FC = () => {
     }
   };
   
-  const isAIResponding = isLoading && messages[messages.length - 1].author === MessageAuthor.MODEL;
+  const isAIResponding = isLoading && messages.length > 0 && messages[messages.length - 1].author === MessageAuthor.MODEL;
   const showTypingIndicator = isLoading && !isAIResponding;
 
   return (
