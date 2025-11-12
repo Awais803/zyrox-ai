@@ -1,15 +1,10 @@
 import { GoogleGenAI, Chat } from "@google/genai";
 
-let ai: GoogleGenAI | null = null;
-
 function getGenAI(): GoogleGenAI {
   if (!process.env.API_KEY) {
     throw new Error("Gemini API key not found. Please set the API_KEY environment variable.");
   }
-  if (!ai) {
-    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  }
-  return ai;
+  return new GoogleGenAI({ apiKey: process.env.API_KEY });
 }
 
 export function createChatSession(): Chat {

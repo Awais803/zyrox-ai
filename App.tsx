@@ -15,21 +15,8 @@ const App: React.FC = () => {
     }
   ]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [chatSession, setChatSession] = useState<Chat | null>(null);
+  const chatSessionRef = useRef<Chat | null>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    try {
-      const session = createChatSession();
-      setChatSession(session);
-    } catch (error) {
-      console.error("Failed to create chat session:", error);
-      setMessages(prev => [...prev, {
-        author: MessageAuthor.MODEL,
-        content: "Sorry, I couldn't connect to my brain right now. Please check your API key setup and refresh the page."
-      }]);
-    }
-  }, []);
 
   useEffect(() => {
     // Scroll to the bottom of the chat container when messages update
@@ -39,9 +26,24 @@ const App: React.FC = () => {
   }, [messages, isLoading]);
 
   const handleSendMessage = async (userInput: string) => {
-    if (!chatSession || isLoading) {
+    if (isLoading) {
       return;
     }
+
+    // Initialize chat session on first message
+    if (!chatSessionRef.current) {
+      try {
+        chatSessionRef.current = createChatSession();
+      } catch (error) {
+        console.error("Failed to create chat session:", error);
+        setMessages(prev => [...prev, {
+          author: MessageAuthor.MODEL,
+          content: "Sorry, I couldn't connect to my brain right now. Please check your API key setup and refresh the page."
+        }]);
+        return;
+      }
+    }
+    const chatSession = chatSessionRef.current;
 
     // Play send sound
     (document.getElementById('send-sound') as HTMLAudioElement)?.play().catch(console.error);
@@ -55,7 +57,7 @@ const App: React.FC = () => {
       
       let modelResponse = '';
       let isFirstChunk = true;
-      // This will be replaced by the actual message as it streams in
+      // Add a placeholder for the streaming response
       setMessages(prev => [...prev, { author: MessageAuthor.MODEL, content: '' }]);
 
       for await (const chunk of result) {
@@ -65,37 +67,35 @@ const App: React.FC = () => {
           isFirstChunk = false;
         }
         modelResponse += chunk.text;
-        setMessages(prev => {
-          const newMessages = [...prev];
-          const lastMessage = newMessages[newMessages.length - 1];
-          // Create a new object for the last message to avoid mutation
-          newMessages[newMessages.length - 1] = { ...lastMessage, content: modelResponse };
-          return newMessages;
-        });
+        // Update the last message content immutably
+        setMessages(prev => prev.map((msg, index) => 
+            index === prev.length - 1
+            ? { ...msg, content: modelResponse }
+            : msg
+        ));
       }
     } catch (error) {
       console.error("Error sending message to Gemini:", error);
+      const errorMessage = "Oops! Something went wrong. I couldn't process that. Please try again.";
        setMessages(prev => {
-          const newMessages = [...prev];
-          const lastMessage = newMessages[newMessages.length - 1];
-          // If the last message is an empty model message, fill it with an error.
-          if(lastMessage.author === MessageAuthor.MODEL && lastMessage.content === '') {
-            // Create a new object for the last message to avoid mutation
-            newMessages[newMessages.length - 1] = { ...lastMessage, content: "Oops! Something went wrong. I couldn't process that. Please try again." };
+          const lastMessage = prev[prev.length - 1];
+          // If the last message is the empty placeholder, update it with the error.
+          if (lastMessage && lastMessage.author === MessageAuthor.MODEL && lastMessage.content === '') {
+            return prev.map((msg, index) =>
+              index === prev.length - 1
+              ? { ...msg, content: errorMessage }
+              : msg
+            );
           } else { // Otherwise, append a new error message.
-             newMessages.push({
-                author: MessageAuthor.MODEL,
-                content: "Oops! Something went wrong. I couldn't process that. Please try again."
-             });
+             return [...prev, { author: MessageAuthor.MODEL, content: errorMessage }];
           }
-          return newMessages;
        });
     } finally {
       setIsLoading(false);
     }
   };
   
-  const isAIResponding = isLoading && messages.length > 0 && messages[messages.length - 1].author === MessageAuthor.MODEL;
+  const isAIResponding = isLoading && messages.length > 0 && messages[messages.length - 1]?.author === MessageAuthor.MODEL;
   const showTypingIndicator = isLoading && !isAIResponding;
 
   return (
@@ -107,7 +107,7 @@ const App: React.FC = () => {
             <ChatBubble 
               key={index} 
               message={msg} 
-              isFirst={msg.author === MessageAuthor.MODEL && (index === 0 || messages[index - 1].author !== MessageAuthor.MODEL)} 
+              isFirst={msg.author === MessageAuthor.MODEL && (index === 0 || messages[index - 1]?.author !== MessageAuthor.MODEL)} 
               isStreaming={isAIResponding && index === messages.length - 1}
             />
           ))}
