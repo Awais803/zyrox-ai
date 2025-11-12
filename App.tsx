@@ -36,9 +36,13 @@ const App: React.FC = () => {
         chatSessionRef.current = createChatSession();
       } catch (error) {
         console.error("Failed to create chat session:", error);
+        let errorMessage = "Sorry, I couldn't connect to my brain right now. Please check your API key setup and refresh the page.";
+        if (error instanceof Error && error.message.includes("API key not found")) {
+            errorMessage = "It seems the Gemini API key is missing. Please ensure it's configured correctly in your project's secrets or environment variables, then refresh the page and try again.";
+        }
         setMessages(prev => [...prev, {
           author: MessageAuthor.MODEL,
-          content: "Sorry, I couldn't connect to my brain right now. Please check your API key setup and refresh the page."
+          content: errorMessage
         }]);
         return;
       }
